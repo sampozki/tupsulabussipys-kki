@@ -1,0 +1,9 @@
+version: "2"
+
+services:
+  tupsulabus:
+    image: tupsulabus:latest
+    container_name: tupsulabus
+    restart: unless-stopped
+    ports:
+      - 3003:3000
