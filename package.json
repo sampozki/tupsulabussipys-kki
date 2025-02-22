@@ -1,0 +1,16 @@
+{
+  "name": "tupsula-bus-timetable",
+  "version": "0.0.1",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "sampozki",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "ntp-client": "^0.5.3",
+    "ws": "^8.18.1"
+  }
+}
