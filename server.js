@@ -1,22 +1,18 @@
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const url = require('url');
 
-// Helper to create the top "heading" card with title and subtitle
-function createHeadingCard(title, subtext, imgURL) {
-  // We use Bootstrap’s flex utilities to position the image next to the title
-  // Adjust classes or inline styles as desired for sizing/alignment
+// Create heading card
+function createHeadingCard() {
   return `
     <div class="card">
       <div class="card-body">
-        <div class="d-flex flex-column flex-sm-row align-items-center">
-          <img 
-            src="${imgURL}" 
-            alt="Logo" 
-            class="img-fluid mb-3 mb-sm-0 me-sm-3" 
-            style="max-height:60px;"
-          />
+        <div class="d-flex flex-column flex-sm-row justify-content-center">
+          <img src="/tupsbus.png" alt="Logo" class="img-fluid mb-2 mb-sm-0 me-sm-2 ratio ratio-1x1" style="width: 80px;"/>
           <div>
-            <h1 class="card-title mb-0">${title}</h1>
-            <p class="text-muted mb-0">${subtext}</p>
+            <h1 class="card-title mb-0">Tupsulan bussipysäkit :3</h1>
+            <p class="text-muted mb-0">Minuutteja bussiin -> livenä kartalla</p>
           </div>
         </div>
       </div>
@@ -24,7 +20,7 @@ function createHeadingCard(title, subtext, imgURL) {
   `;
 }
 
-// Helper to create an iframe card (single column)
+// Create bus timetable iframe
 function createIframeCard(url) {
   return `
     <div class="col-md-6">
@@ -43,46 +39,85 @@ function createIframeCard(url) {
   `;
 }
 
-// Create the server
+// Create footer with repo url
+function createFooter() {
+  return `
+    <footer class="text-center mt-5">
+      <hr />
+      <p>
+        <a href="https://github.com/sampozki/tupsulabussipys-kki" target="_blank" rel="noopener noreferrer">
+          Repositorio
+        </a>
+      </p>
+    </footer>
+  `;
+}
+
+// Create basic HTTP server
 const server = http.createServer((req, res) => {
-  // Build the HTML step by step
-  let html = '';
+  const parsedUrl = url.parse(req.url);
+
+  // Serve favicon.ico
+  if (parsedUrl.pathname === '/favicon.ico') {
+    const faviconPath = path.join(__dirname, 'public', 'favicon.ico');
+    fs.access(faviconPath, fs.constants.F_OK, (err) => {
+      if (err) {
+        // Fallback: no favicon
+        res.writeHead(404);
+        return res.end();
+      }
+      // Serve the .ico file
+      res.writeHead(200, { 'Content-Type': 'image/x-icon' });
+      fs.createReadStream(faviconPath).pipe(res);
+    });
+    return;
+  }
+
+  // Serve tupsbus.png image
+  if (parsedUrl.pathname === '/tupsbus.png') {
+    const logoPath = path.join(__dirname, 'public', 'tupsbus.png');
+    fs.access(logoPath, fs.constants.F_OK, (err) => {
+      if (err) {
+        // 404 if image can't be found
+        res.writeHead(404);
+        return res.end();
+      }
+      res.writeHead(200, { 'Content-Type': 'image/png' });
+      fs.createReadStream(logoPath).pipe(res);
+    });
+    return;
+  }
 
   // Basic HTML boilerplate
-  html += `
+  let html = `
     <!DOCTYPE html>
     <html lang="en">
-    <head>
-      <meta charset="utf-8"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>Tupsulan bussipysäkit</title>
-      <!-- Bootstrap CSS (CDN) -->
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      >
-    </head>
-    <body class="bg-light">
-      <div class="container py-4">
-  `;
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Tupsulan bussipysäkit</title>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/vapor/bootstrap.min.css">
+        
+        <link rel="icon" href="/favicon.ico">
+      </head>
+      <body>
+        <div class="container py-4">
+          <!-- Heading card -->
+          ${createHeadingCard()}
 
-  // First row: Single column with heading card
-  html += createHeadingCard(
-    'Tupsulan bussipysäkit :3',
-    'Minuutteja bussiin -> livenä kartalla',
-    'https://bus.sampozki.fi/tupsbus.png'
-    //'https://via.placeholder.com/150' 
-    // Example image URL
-  );
+          <!-- Second row with two iframes -->
+          <div class="row g-4">
+            <!-- Shows the bus stop to keskusta -->
+            ${createIframeCard('https://tremonitori.digitransit.fi/view?cont=OegRrZntBRck8KebSxJC8w==')}
+            <!-- Shows the bus stop to Hervanta -->
+            ${createIframeCard('https://tremonitori.digitransit.fi/view?cont=R0cybxFsZRC-uy2zCdbUdg==')}
+          </div>
 
-  // Second row: Two columns with iframes
-  html += `
-        <div class="row g-4">
-          ${createIframeCard('https://tremonitori.digitransit.fi/view?cont=3I-hT7HPFBjJkjeEeNLMMQ==')}
-          ${createIframeCard('https://tremonitori.digitransit.fi/view?cont=6+yg0k--KpkTYhDCw3zWGg==')}
+            ${createFooter()}
+
         </div>
-      </div>
-    </body>
+      </body>
     </html>
   `;
 
