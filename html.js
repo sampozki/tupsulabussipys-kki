@@ -19,13 +19,14 @@ function createHeadingCard() {
 }
 
 // Create bus timetable iframe
-function createIframeCard(url, comment) {
+function createIframeCard(url, link, comment) {
   return (
     `<div class="col-md-6">
         <div class="card h-100">
-          <div class="card-body p-0">
+          <div class="card-body d-flex flex-column justify-content-center align-items-center position-relative">
             <!-- ${comment} -->
             <iframe src="${url}" width="100%" height="600" style="border: none; pointer-events: none;"> </iframe>
+            <a href="${link}" target="_blank" rel="noopener noreferrer">Pysäkin Reittiopaslinkki</a>
           </div>
         </div>
       </div>`);
@@ -60,8 +61,8 @@ function htmlPage() {
       <div class="container py-4">
         ${createHeadingCard()}
         <div class="row g-4">
-          ${createIframeCard('https://tremonitori.digitransit.fi/view?cont=OegRrZntBRck8KebSxJC8w==', 'Bus stop to keskusta')}
-          ${createIframeCard('https://tremonitori.digitransit.fi/view?cont=R0cybxFsZRC-uy2zCdbUdg==', 'Bus stop to Hervanta')}
+          ${createIframeCard('https://tremonitori.digitransit.fi/view?cont=OegRrZntBRck8KebSxJC8w==', 'https://reittiopas.tampere.fi/pysakit/tampere%3A4097', 'Bus stop to keskusta')}
+          ${createIframeCard('https://tremonitori.digitransit.fi/view?cont=R0cybxFsZRC-uy2zCdbUdg==', 'https://reittiopas.tampere.fi/pysakit/tampere%3A4106', 'Bus stop to Hervanta')}
         </div>
           ${createFooter()}
       </div>
