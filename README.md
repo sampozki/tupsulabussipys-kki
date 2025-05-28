@@ -9,3 +9,5 @@ Ajossa osoitteessa https://bus.sampozki.fi/
 
 
 ``docker-compose up -d``
+
+asd
